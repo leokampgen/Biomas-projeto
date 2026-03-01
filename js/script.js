@@ -179,7 +179,7 @@ const B = {
     fauna: [
       { n: 'Camelo Bactriano', l: 'Camelus bactrianus', d: 'Armazena gordura nas corcovas. Pode perder 30% do peso corporal em água sem morrer.', p: 'img/deserto-1.webp', v: 90, s: 50, r: 65 },
       { n: 'Escorpião do Saara', l: 'Androctonus australis', d: 'Resiste a temperaturas de 45°C. Floresce sob a luz UV que a maioria dos animais evita.', p: 'img/deserto-2.webp', v: 55, s: 40, r: 70 },
-      { n: 'Raposa Fennec', l: 'Vulpes zerda', d: 'Orelhas de 15cm funcionam como radiadores térmicos. Caça pela vibração na areia.', p: 'img/deserto-3.webp', v: 60, s: 72, r: 68 },
+      { n: 'Raposa Fennec', l: 'Vulpes zerda', d: 'Orelhas de 15cm funcionam como radiadores térmicos. Caça pela vibração na areia.', p: 'img/deserto-3.jpg', v: 60, s: 72, r: 68 },
     ],
     particle: 'sand',
     introCards: [
