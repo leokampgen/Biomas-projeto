@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- SEO -->
+  <title>BIOMAS — Atlas dos Ecossistemas Terrestres</title>
+  <meta name="description" content="Explore os principais biomas do planeta — florestas tropicais, oceanos, regiões vulcânicas, montanhas e desertos — com dados científicos, fauna representativa e mapa interativo.">
+  <meta name="robots" content="index, follow">
+
+  <!-- Open Graph -->
+  <meta property="og:title"       content="BIOMAS — Atlas dos Ecossistemas Terrestres">
+  <meta property="og:description" content="Explore os principais biomas do planeta com dados, fauna e mapa interativo.">
+  <meta property="og:type"        content="website">
+  <meta property="og:image"       content="https://images.unsplash.com/photo-1586348943529-beaae6c28db9?w=1200&q=80">
+
+  <!-- Favicon (SVG inline para evitar dependência externa) -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+
+  <!-- Fontes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Mono:wght@300;400&family=Archivo+Black&display=swap" rel="stylesheet">
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="css/styles.css">
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+
+
+  <!-- Script principal (defer — executa após o DOM estar pronto) -->
+  <script src="js/script.js" defer></script>
+</head>
+<body>
+
+  <!-- Cursor personalizado (ocultado em touch) -->
+  <div id="cur"   aria-hidden="true"></div>
+  <div id="cur-r" aria-hidden="true"></div>
+
+  <!-- Overlays de transição -->
+  <div id="tov"    aria-hidden="true"></div>
+  <canvas id="ptx"    aria-hidden="true"></canvas>
+  <canvas id="bio-tx" aria-hidden="true"></canvas>
+
+  <!-- Botão de áudio ambiente -->
+  <button id="audio-btn" aria-label="Ativar som ambiente do bioma">
+    <div class="ab-ring" aria-hidden="true"></div>
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" id="audio-icon" aria-hidden="true" focusable="false">
+      <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+    </svg>
+  </button>
+
+  <!-- Tela de carregamento -->
+  <div id="loading" role="status" aria-label="Carregando Atlas dos Ecossistemas">
+    <div class="ld-biome-ghost" id="ld-ghost" aria-hidden="true">FLORESTAS</div>
+    <div class="ld-corner tl" aria-hidden="true"></div>
+    <div class="ld-corner tr" aria-hidden="true"></div>
+    <div class="ld-corner bl" aria-hidden="true"></div>
+    <div class="ld-corner br" aria-hidden="true"></div>
+    <div class="ld-vline l"   aria-hidden="true"></div>
+    <div class="ld-vline r"   aria-hidden="true"></div>
+    <div class="ld-center">
+      <div class="ld-logo" aria-hidden="true">BIO<em>MAS</em></div>
+      <div class="ld-scan" aria-hidden="true"></div>
+      <div class="ld-lb"   id="ld-lb">Iniciando</div>
+      <div class="ld-bw"   aria-hidden="true">
+        <div class="ld-bf" id="ld-bf"></div>
+      </div>
+    </div>
+    <div class="ld-pct" aria-hidden="true"><span id="ld-n">0</span>%</div>
+    <div class="ld-tag" aria-hidden="true">Atlas dos Ecossistemas</div>
+  </div>
+
+  <!-- Navegação lateral por pontos -->
+  <nav id="sdots" aria-label="Navegação rápida entre biomas">
+    <button class="sdot active" data-biome="floresta" data-l="Florestas"  aria-label="Ir para Florestas"></button>
+    <button class="sdot"        data-biome="oceano"   data-l="Oceanos"    aria-label="Ir para Oceanos"></button>
+    <button class="sdot"        data-biome="vulcao"   data-l="Vulcânico"  aria-label="Ir para Vulcânico"></button>
+    <button class="sdot"        data-biome="montanha" data-l="Montanhas"  aria-label="Ir para Montanhas"></button>
+    <button class="sdot"        data-biome="deserto"  data-l="Desertos"   aria-label="Ir para Desertos"></button>
+  </nav>
+
+  <!-- Cabeçalho fixo -->
+  <header role="banner">
+    <div class="logo" aria-label="BIOMAS — Atlas dos Ecossistemas">BIO<em>MAS</em></div>
+    <nav aria-label="Menu principal">
+      <a href="#intro-sec">Biomas</a>
+      <a href="#map-sec">Mapa</a>
+      <a href="#threats-sec">Ameaças</a>
+      <a href="#fauna-sec">Fauna</a>
+    </nav>
+    <div class="hbadge" id="hbadge" aria-live="polite">FLORESTAS TROPICAIS</div>
+  </header>
+
+  <main>
+
+    <!-- HERO -->
+    <section id="hero" aria-label="Bioma ativo">
+      <div id="hbg" aria-hidden="true"></div>
+      <div class="hov" aria-hidden="true"></div>
+      <div class="hbot reveal">
+        <p class="hey" id="hey">Atlas dos Ecossistemas Terrestres</p>
+        <h1 class="hh1">BIOMAS<span class="it" id="hit">Floresta Tropical Úmida</span></h1>
+        <div class="hstats" aria-label="Dados do bioma">
+          <div class="hs">
+            <span class="hsv" id="hsa">8.3M</span>
+            <span class="hsk">Área km²</span>
+          </div>
+          <div class="hs">
+            <span class="hsv" id="hss">1.4M+</span>
+            <span class="hsk">Espécies</span>
+          </div>
+          <div class="hs">
+            <span class="hsv" id="hst">28°C</span>
+            <span class="hsk">Temp. Média</span>
+          </div>
+          <div class="hs">
+            <span class="hsv" id="hsc">6%</span>
+            <span class="hsk">Cobertura Global</span>
+          </div>
+        </div>
+      </div>
+      <div class="sclue" aria-hidden="true">
+        <div class="sline"></div>
+        <span class="stxt">Explorar</span>
+      </div>
+    </section>
+
+    <!-- CARROSSEL DE BIOMAS -->
+    <section id="carousel" aria-label="Seleção de bioma">
+      <div class="chdr">
+        <div>
+          <p class="ctag">Seleção de Ecossistema</p>
+          <h2 class="cttl">SELECIONE<br>O BIOMA</h2>
+        </div>
+        <p class="chint" aria-hidden="true">← Arraste para navegar →<br>Clique para <span>selecionar</span></p>
+      </div>
+      <div class="souter" id="souter" role="region" aria-label="Carrossel de biomas">
+        <div class="sstrip" id="sstrip" role="list"></div>
+      </div>
+      <div class="cnav" id="cnav" role="group" aria-label="Filtros de bioma"></div>
+    </section>
+
+    <!-- INTRODUÇÃO AOS BIOMAS -->
+    <section id="intro-sec" class="sec" aria-labelledby="intro-heading">
+      <div class="mw">
+        <div class="reveal">
+          <p class="stag">Ecossistemas do Planeta</p>
+          <h2 class="sh2" id="intro-heading">INTRODUÇÃO<br>AOS BIOMAS</h2>
+          <div class="srule" aria-hidden="true"></div>
+          <p class="sp" id="intro-p">Os biomas são grandes regiões ecológicas da Terra que compartilham condições climáticas similares, determinando a vegetação, a fauna e os processos naturais que as caracterizam.</p>
+        </div>
+        <div class="intro-grid reveal" id="intro-grid" aria-label="Cards editoriais"></div>
+      </div>
+    </section>
+
+    <!-- FAIXA DE FATOS ROLANTE -->
+    <div class="facts-strip" aria-hidden="true">
+      <div class="fs-inner" id="fs-inner"></div>
+    </div>
+
+    <!-- MAPA MUNDIAL -->
+    <section id="map-sec" class="sec" aria-labelledby="map-heading">
+      <div class="mw">
+        <div class="reveal">
+          <p class="stag">Distribuição Geográfica Global</p>
+          <h2 class="sh2" id="map-heading">MAPA<br>MUNDIAL</h2>
+          <div class="srule" aria-hidden="true"></div>
+          <p class="sp" id="map-p">Explore a distribuição geográfica das Florestas Tropicais. Regiões destacadas indicam as principais concentrações do bioma ativo.</p>
+        </div>
+        <div class="map-layout">
+          <div class="reveal">
+            <p class="stag map-regions-tag">Regiões Ativas</p>
+            <div class="mleg" id="mleg" role="list" aria-label="Regiões do bioma"></div>
+          </div>
+          <div class="reveal">
+            <div class="mframe" id="mframe">
+              <svg id="wmap" viewBox="0 0 960 480" preserveAspectRatio="xMidYMid meet"
+                   role="img" aria-label="Mapa mundial com regiões do bioma destacadas"></svg>
+              <div class="mtt" id="mtt" role="tooltip">
+                <div class="mttc" id="mttc"></div>
+                <div class="mttp" id="mttp"></div>
+                <div class="mttd" id="mttd"></div>
+              </div>
+              <div class="mstat" aria-live="polite">
+                <div class="msb" id="msb">FLORESTAS</div>
+                <div class="mss" id="mss">10 REGIÕES ATIVAS</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="chart-wrap" class="reveal" role="region" aria-label="Gráfico de temperatura mensal">
+          <p id="chart-title">Perfil Climático — Temperatura Mensal (°C)</p>
+          <canvas id="climate-chart" aria-label="Gráfico de linha com temperaturas mensais do bioma"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- AMEAÇAS E CONSERVAÇÃO -->
+    <section id="threats-sec" class="sec" aria-labelledby="threats-heading">
+      <div class="mw">
+        <div class="reveal">
+          <p class="stag">Pressões Ambientais</p>
+          <h2 class="sh2" id="threats-heading">AMEAÇAS &amp;<br>CONSERVAÇÃO</h2>
+          <div class="srule" aria-hidden="true"></div>
+          <p class="sp" id="thr-p">Cada bioma enfrenta pressões específicas que colocam em risco sua integridade ecológica e a sobrevivência de milhares de espécies.</p>
+        </div>
+        <div class="threats-layout reveal">
+          <div class="threat-list" id="thr-list" role="list" aria-label="Lista de ameaças"></div>
+          <div class="threat-visual">
+            <div class="tv-bar-wrap" id="tv-bars" aria-label="Indicadores de impacto"></div>
+            <blockquote class="tv-quote" id="tv-quote">
+              <p class="tv-quote-text" id="tv-qt"></p>
+              <cite class="tv-quote-src" id="tv-qs"></cite>
+            </blockquote>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAUNA REPRESENTATIVA -->
+    <section id="fauna-sec" class="sec" aria-labelledby="fauna-heading">
+      <div class="mw">
+        <div class="reveal">
+          <p class="stag">Fauna Representativa</p>
+          <h2 class="sh2" id="fauna-heading">ANIMAIS<br>DO BIOMA</h2>
+          <div class="srule" aria-hidden="true"></div>
+          <p class="sp" id="fauna-p">Espécies emblemáticas das Florestas Tropicais, adaptadas ao ambiente de alta umidade e biodiversidade extrema.</p>
+        </div>
+        <div class="fgrid reveal" id="fgrid" role="list" aria-label="Fauna do bioma"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer role="contentinfo">
+    <div class="flogo">BIOMAS</div>
+    <p class="ftxt">© 2025 — Atlas dos Ecossistemas Terrestres</p>
+    <p class="ftxt">Terra · Água · Fogo · Gelo · Areia</p>
+  </footer>
+
+</body>
+</html>
