@@ -149,7 +149,7 @@ const B = {
     introCards: [
       { bg: 'img/teto.webp', tag: 'Himalaia', name: 'O Teto do Mundo', text: 'O Himalaia surgiu da colisão entre as placas Indiana e Eurasiana há 50 milhões de anos e continua crescendo 5mm por ano. Abriga 14 picos acima de 8.000 metros.', big: true },
       { bg: 'img/gelo.webp', tag: 'Ártico', name: 'Gelo em Colapso', text: 'O Ártico aquece 4x mais rápido que o resto do planeta. Em 2023, o gelo marinho atingiu seu mínimo histórico em setembro.' },
-      { bg: 'img/musgo.webp', tag: 'Tundra', name: 'Solo de Musgo e Líquen', text: 'A tundra ártica armazena 1,7 trilhão de toneladas de carbono orgânico congelado — mais que toda a atmosfera terrestre atual.' },
+      { bg: 'img/musgos.jpg', tag: 'Tundra', name: 'Solo de Musgo e Líquen', text: 'A tundra ártica armazena 1,7 trilhão de toneladas de carbono orgânico congelado — mais que toda a atmosfera terrestre atual.' },
     ],
   },
 
